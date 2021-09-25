@@ -36,9 +36,9 @@ class Satellite():
     def update_attitude(self, dt):
         At = np.array([
             [0., -self.omega[0], -self.omega[1], -self.omega[2]],
-            [self.omega[0], 0., -self.omega[0], self.omega[1]],
-            [self.omega[1], self.omega[0], 0., -self.omega[2]],
-            [self.omega[2], -self.omega[1], self.omega[2], 0.]
+            [self.omega[0], 0., -self.omega[2], self.omega[1]],
+            [self.omega[1], self.omega[2], 0., -self.omega[0]],
+            [self.omega[2], -self.omega[1], self.omega[1], 0.]
         ])
         # print(At)
         Bt = (np.identity(4) + At * dt)
@@ -98,13 +98,13 @@ class SatelliteSimulation():
             self.sat.update_attitude(dt)
         
         if (plot_results):
-            fig, ax = plt.subplots() #(2,1,1)
-            ax.plot(self.t, self.sat_quat)
-            # ax.title('Satellite Attitude')
-            # ax.ylabel('Quaternion Value')
+            fig, (ax1, ax2) = plt.subplots(2,1)
+            for i in range(4):
+                ax1.plot(self.t, self.sat_quat[0:, i])
+            # ax1.title('Satellite Attitude')
+            # ax1.ylabel('Quaternion Value')
+            legend = ax1.legend()
             plt.show()
-
-            # legend = ax.legend()
 
 
 ################################################################################################

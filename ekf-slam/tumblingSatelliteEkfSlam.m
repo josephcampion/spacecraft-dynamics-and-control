@@ -1,8 +1,7 @@
 %% tumblingSatelliteEkfSlam.m
 
 
-%%
-
+%% Satellite and simulation specs
 
 Jx = 10;
 Jy = 50;
@@ -12,7 +11,7 @@ inertia = [Jx; Jy; Jz];
 T = 30;
 dt = 1e-3;
 
-%%
+%% TODO: Save movie of simulation
 
 % h = figure;
 
@@ -45,14 +44,22 @@ for ii = 1:(n-1)
 end
 
 
-% Plot results
+%% Plot results
+
 figure
 subplot(2,1,1)
 plot(t,omega_t)
 grid on
+title("Torque Input $\vec{\tau}(t)$", "fontsize", 14, "interpreter","latex")
+ylabel("Torque [Nm]", "fontsize", 12, "interpreter","latex")
+% xlabel("Time [sec]", "fontsize", 12, "interpreter","latex")
+
 subplot(2,1,2)
 plot(t,quat_t)
 grid on
+title("Satellite Attitude $\vec{q}(t)$", "fontsize", 14, "interpreter","latex")
+ylabel("Quaternion Value", "fontsize", 12, "interpreter","latex")
+xlabel("Time [sec]", "fontsize", 12, "interpreter","latex")
 
 %% Simulate stars
 

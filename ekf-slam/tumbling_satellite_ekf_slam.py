@@ -67,7 +67,22 @@ class SatelliteSimulation():
         # satellite attitude (quaternion) at each timestep:
         self.sat_quat = np.zeros((n,4))
         # satellite angular velocity (omega) at each timestep:
-        self.sat_ang_vel = np.zeros((n,3))
+        self.sat_omega = np.zeros((n,3))
+
+    def set_attitude(self, attitude_quat):
+        self.sat_quat = attitude_quat
+
+    def get_sat_attitude(self):
+        return self.sat.sat_quat
+
+    def set_sat_ang_vel(self, new_sat_ang_vel):
+        self.sat_omega = new_sat_ang_vel
+
+    def get_sat_ang_vel(self):
+        return self.sat_omega
+
+    def set_control(self, new_control):
+        self.tau = new_control
 
     def run_simulation(self, plot_results=True):
         
@@ -75,7 +90,7 @@ class SatelliteSimulation():
         for i in range(self.n):
 
             # store attitude and angular velocity
-            self.sat_ang_vel[i] = self.sat.get_ang_vel()
+            self.sat_omega[i] = self.sat.get_ang_vel()
             self.sat_quat[i] = self.sat.get_attitude_quat()
 
             # update dynamics and kinematics based on control effort
@@ -101,6 +116,8 @@ Jz = 50
 J = np.array([Jx, Jy, Jz])
 T = 10
 dt = 1e-2
+n = int(T / dt) + 1
+t = np.linspace(0.0, T, n)
 sat_tau = np.array([np.ones(n), np.cos(t), -2*np.sin(t)])
 
 sat = Satellite(J, omega_0=[1., 2. ,3.])

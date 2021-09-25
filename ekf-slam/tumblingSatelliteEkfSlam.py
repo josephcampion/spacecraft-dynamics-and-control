@@ -53,62 +53,58 @@ class Satellite():
 
 ##################################################################################################3
 
-# class SatelliteSimulation():
+class SatelliteSimulation():
 
-#     def __init__(self, satellite, period, dt,)
+    def __init__(self, satellite, period, timestep, control):
+        self.sat = satellite
+        self.T = period
+        self.dt = timestep
+        # vector of control effort (torque about x,y,z):
+        self.tau = control
+        # number of timesteps:
+        self.n = int(period / dt) + 1
+        self.t = np.linspace(0.0, period, self.n)
+        # satellite attitude (quaternion) at each timestep:
+        self.sat_quat = np.zeros((n,4))
+        # satellite angular velocity (omega) at each timestep:
+        self.sat_ang_vel = np.zeros((n,3))
 
+    def run_simulation(self, plot_results=True):
+        
+        # Iterate through each timestep
+        for i in range(self.n):
+
+            # store attitude and angular velocity
+            self.sat_ang_vel[i] = self.sat.get_ang_vel()
+            self.sat_quat[i] = self.sat.get_attitude_quat()
+
+            # update dynamics and kinematics based on control effort
+            self.sat.update_dynamics(self.tau[0][i], self.tau[1][i], self.tau[2][i], dt)
+            self.sat.update_attitude(dt)
+        
+        if (plot_results):
+            fig, ax = plt.subplots() #(2,1,1)
+            ax.plot(self.t, self.sat_quat)
+            # ax.title('Satellite Attitude')
+            # ax.ylabel('Quaternion Value')
+            plt.show()
+
+            # legend = ax.legend()
+
+
+################################################################################################
+
+# satellite and simulation params
 Jx = 10
 Jy = 50
 Jz = 50
-
 J = np.array([Jx, Jy, Jz])
-# print(J)
-
 T = 10
 dt = 1e-2
-n = int(T / dt) + 1
-# print(n)
-
-t = np.linspace(0.0, T, n)
-
-# print(t)
-
-sat_quat = np.zeros((n,4))
-# print(sat_quat)
-
-sat_ang_vel = np.zeros((n,3))
-
 sat_tau = np.array([np.ones(n), np.cos(t), -2*np.sin(t)])
 
-# print(sat_tau)
-
-
-# plt.plot(t, sat_tau[0])
-# plt.plot(t, sat_tau[1])
-# plt.plot(t, sat_tau[2])
-# plt.show()
-
 sat = Satellite(J, omega_0=[1., 2. ,3.])
-print(sat.get_omega_skew())
-sat.update_attitude(dt)
-
-# print(sat)
-print(sat.get_attitude_quat())
-
-for i in range(n):
-    # print(sat_quat[1])
-    # sat_quat[i] = sat.get_attitude_quat()
-    # print(sat.get_ang_vel())
-    sat_ang_vel[i] = sat.get_ang_vel()
-    sat_quat[i] = sat.get_attitude_quat()
-
-    sat.update_dynamics(sat_tau[0][i], sat_tau[1][i], sat_tau[2][i], dt)
-    sat.update_attitude(dt)
-
-plt.plot(t, sat_quat)
-# plt.plot(t, sat_ang_vel)
-plt.show()
-
-
+sat_sim = SatelliteSimulation(sat, T, dt, sat_tau)
+sat_sim.run_simulation()
 
 

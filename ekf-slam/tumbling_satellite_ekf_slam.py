@@ -167,8 +167,69 @@ class SatExtendedKalmanFilter():
     def update_meas_jacob(self):
         pass
 
-    def dgj_dq0(self, star_vector):
-        pass 
+    def get_dg_dq0(self, star_vector):
+        sx = star_vector[0]
+        sy = star_vector[1]
+        sz = star_vector[2]
+        q = self.sat.get_attitude_quat()
+        # q0 = q[0]
+        q1 = q[1]
+        q2 = q[2]
+        q3 = q[3]
+        dg_dq0 = np.array([
+            [ 2 * q3 * sy - 2 * q2 * sz ],
+            [-2 * q3 * sx + 2 * q1 * sz ],
+            [ 2 * q2 * sx - 2 * q1 * sy ]
+        ])
+        return dg_dq0
+
+    def get_dg_dq1(self, star_vector):
+        sx = star_vector[0]
+        sy = star_vector[1]
+        sz = star_vector[2]
+        q = self.sat.get_attitude_quat()
+        q0 = q[0]
+        q1 = q[1]
+        q2 = q[2]
+        q3 = q[3]
+        dg_dq1 = np.array([
+            [ 2 * q2 * sy - 2 * q3 * sz ],
+            [ 2 * q2 * sx - 4 * q1 * sy + 2 * q0 * sz ],
+            [ 2 * q3 * sx - 2 * q0 * sy - 4 * q1 * sz ]
+        ])
+        return dg_dq1
+
+    def get_dg_dq2(self, star_vector):
+        sx = star_vector[0]
+        sy = star_vector[1]
+        sz = star_vector[2]
+        q = self.sat.get_attitude_quat()
+        q0 = q[0]
+        q1 = q[1]
+        q2 = q[2]
+        q3 = q[3]
+        dg_dq2 = np.array([
+            [-4 * q2 * sx + 2 * q1 * sy + 2 * q0 * sz ],
+            [ 2 * q1 * sx + 2 * q3 * sz ],
+            [ 2 * q0 * sx + 2 * q3 * sy - 4 * q2 * sz ]
+        ])
+        return dg_dq2
+
+    def get_dg_dq3(self, star_vector):
+        sx = star_vector[0]
+        sy = star_vector[1]
+        sz = star_vector[2]
+        q = self.sat.get_attitude_quat()
+        q0 = q[0]
+        q1 = q[1]
+        q2 = q[2]
+        q3 = q[3]
+        dg_dq3 = np.array([
+            [-4 * q3 * sx + 2 * q0 * sy + 2 * q1 * sz ],
+            [-2 * q0 * sx - 4 * q3 * sy + 2 * q2 * sz ],
+            [ 2 * q1 * sx + 2 * q2 * sy ]
+        ])
+        return dg_dq3
 
 ################################################################################################
 
@@ -183,11 +244,14 @@ n = int(T / dt) + 1
 t = np.linspace(0.0, T, n)
 sat_tau = np.array([np.ones(n), np.cos(t), -2*np.sin(t)])
 
-sat = Satellite(J, omega_0=[1., 2. ,3.])
+sat = Satellite(J, omega_0=[1., 2. , 3.])
 sat_sim = SatelliteSimulation(sat, T, dt, sat_tau)
-# sat_sim.run_simulation(False)
+sat_sim.run_simulation(False)
 
 ss = StarSensor()
 
 sat_ekf = SatExtendedKalmanFilter(sat, ss, 1e-4, 1e-4)
-print(sat_ekf.At)
+# print(sat_ekf.At)
+
+sv = np.array([0., np.sqrt(3)/2, 0.5])
+print(sat_ekf.get_dg_dq3(sv))

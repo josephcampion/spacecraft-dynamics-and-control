@@ -133,3 +133,43 @@ def hat(omega):
                           [-b, a, 0]])
     return omega_hat
 
+def ClassicRodriguesToRotation(qcrp):
+    """
+    converts classical Rodrigues parameters to direction cosine matrix
+    """
+    a = 1 / (1 + np.dot(qcrp,qcrp))
+    b = 1 - np.dot(qcrp,qcrp)
+    A = 2 * np.outer(qcrp,qcrp)
+    B = 2 * hat(qcrp)
+    I3x3 = np.eye(3)
+
+    R = a * (b * I3x3 + A - B)
+    return R
+
+def RotationToClassicRodrigues(R):
+
+    zeta = np.sqrt(np.trace(R) + 1)
+    q1 = (R[1,2] - R[2,1]) / zeta ** 2
+    q2 = (R[2,0] - R[0,2]) / zeta ** 2
+    q3 = (R[0,1] - R[1,0]) / zeta ** 2
+    q = np.array([q1,q2,q3])
+    
+    return q
+
+qcrp = np.array([0.1,0.2,0.3])
+R = ClassicRodriguesToRotation(qcrp)
+print(R)
+
+R = np.array([
+    [.3, -.7, .7],
+    [.9, .5, .05],
+    [-.4, .6, .7]
+])
+
+# q = RotationToClassicRodrigues(R)
+# print(q)
+
+# qfn = np.array([0.1,0.2,0.3])
+# qbn = np.array([-0.3,0.3,0.1])
+# qbf = (qbn - qfn + np.cross(qbn,qfn)) / (1 + np.dot(qbn,qfn))
+# print(qbf)

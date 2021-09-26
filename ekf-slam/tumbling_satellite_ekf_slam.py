@@ -3,6 +3,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 # import scipy
+import tools.rotations
 
 
 class Satellite():
@@ -41,8 +42,6 @@ class Satellite():
             [self.omega[2], -self.omega[1], self.omega[1], 0.]
         ])
         # print(At)
-        Bt = (np.identity(4) + At * dt)
-        # print(Bt)
         new_quat = (np.identity(4) + At * dt) @ self.quat
         self.quat = new_quat / np.linalg.norm(new_quat)
         # print(self.quat)
@@ -100,10 +99,15 @@ class SatelliteSimulation():
         if (plot_results):
             fig, (ax1, ax2) = plt.subplots(2,1)
             for i in range(4):
-                ax1.plot(self.t, self.sat_quat[0:, i])
-            # ax1.title('Satellite Attitude')
-            # ax1.ylabel('Quaternion Value')
-            legend = ax1.legend()
+                ax1.plot(self.t, self.sat_quat[0:, i], label=("e"+str(i)))
+            for i in range(3):
+                ax2.plot(self.t, self.sat_omega[0:, i], label=("w"+str(i+1)))
+            fig.suptitle('Satellite Attitude')
+            ax1.set_ylabel('Quaternion Value')
+            ax1.legend()
+            ax2.set_ylabel('Omega [rad/s]')
+            ax2.set_xlabel('Time [s]')
+            ax2.legend()
             plt.show()
 
 

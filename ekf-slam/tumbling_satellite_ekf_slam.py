@@ -117,23 +117,55 @@ class StarSensor():
 
     def __init__(self, number_of_stars=10, star_coords=None, meas_noise=1e-4):
         
-        self.N = number_of_stars
-        if star_coords == None:
-            azimuth_angles = 2 * np.pi * np.random.random((self.N,1))
-            polar_angles = np.pi * np.random.random((self.N,1))
-        else:
+        if np.any(star_coords):
             azimuth_angles = star_coords[:,0]
             polar_angles = star_coords[:,1]
+            self.N = np.size(star_coords,0)
+            if number_of_stars != self.N:
+                print("Using size of star coordinates to determine number of stars.")
+        else:
+            self.N = number_of_stars
+            azimuth_angles = 2 * np.pi * np.random.random_sample((self.N,1))
+            polar_angles = np.pi * np.random.random_sample((self.N,1))
+            
         self.phi = azimuth_angles
         self.theta = polar_angles
         self.vt = meas_noise
 
+    def set_azimuthal_angles(self, new_azimuthal_angles):
+        self.phi = new_azimuthal_angles
+
+    def get_azimuthal_angles(self):
+        return self.phi 
+
+    def set_polar_angles(self, new_polar_angles):
+        self.theta = new_polar_angles
+
+    def get_polar_angles(self):
+        self.theta
+
+    def get_unit_vectors(self):
+        sv = np.zeros((self.N,3))
+        print(sv)
+        for i in range(self.N):
+            sv[i,0] = np.sin(self.theta[i]) * np.cos(self.phi[i])
+            sv[i,1] = np.sin(self.theta[i]) * np.sin(self.phi[i])
+            sv[i,2] = np.cos(self.theta[i])
+        return sv
+
+    
 # # Test star sensor class
-# ss = StarSensor()
-# print(ss.phi)
-# print(ss.theta)
+ss = StarSensor()
+print(ss.phi)
+print(ss.theta)
 # print(ss.N)
 # print(ss.vt)
+
+x = np.random.random_sample((15,2))
+ss2 = StarSensor(19,x)
+sv2 = ss2.get_unit_vectors()
+print(sv2)
+# print(np.linalg.norm(sv2,axis=1))
 
 ################################################################################################
 

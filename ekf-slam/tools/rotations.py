@@ -155,21 +155,3 @@ def RotationToClassicRodrigues(R):
     q = np.array([q1,q2,q3])
     
     return q
-
-qcrp = np.array([0.1,0.2,0.3])
-R = ClassicRodriguesToRotation(qcrp)
-print(R)
-
-R = np.array([
-    [.3, -.7, .7],
-    [.9, .5, .05],
-    [-.4, .6, .7]
-])
-
-# q = RotationToClassicRodrigues(R)
-# print(q)
-
-# qfn = np.array([0.1,0.2,0.3])
-# qbn = np.array([-0.3,0.3,0.1])
-# qbf = (qbn - qfn + np.cross(qbn,qfn)) / (1 + np.dot(qbn,qfn))
-# print(qbf)

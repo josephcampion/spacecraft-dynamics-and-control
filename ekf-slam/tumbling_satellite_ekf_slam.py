@@ -27,26 +27,15 @@ class Satellite():
         self.omega[1] = self.omega[1] + ((self.Jz - self.Jx) * self.omega[2] * self.omega[0] + tau_y) / self.Jy * dt # + noise
         self.omega[2] = self.omega[2] + ((self.Jx - self.Jy) * self.omega[0] * self.omega[1] + tau_z) / self.Jz * dt # + noise
 
-    def get_omega_skew(self):
-        Omega = np.array([
-            [0., -self.omega[0], self.omega[1]],
-            [self.omega[0], 0., -self.omega[2]],
-            [-self.omega[1], self.omega[2], 0.]
-        ])
-        return Omega
-
     def update_attitude(self, dt):
         At = np.array([
             [0., -self.omega[0], -self.omega[1], -self.omega[2]],
             [self.omega[0], 0., -self.omega[2], self.omega[1]],
             [self.omega[1], self.omega[2], 0., -self.omega[0]],
-            [self.omega[2], -self.omega[1], self.omega[1], 0.]
+            [self.omega[2], -self.omega[1], self.omega[0], 0.]
         ])
-        # print(At)
         new_quat = (np.identity(4) + At * dt) @ self.quat
-        self.quat = new_quat / np.linalg.norm(new_quat)
-        # print(self.quat)
-        
+        self.quat = new_quat / np.linalg.norm(new_quat)        
 
     def __str__(self):
         return "Satellite with inertia: [%f, %f, %f]" % ( self.Jx, self.Jy, self.Jz )
@@ -146,37 +135,40 @@ class StarSensor():
 
     def get_unit_vectors(self):
         sv = np.zeros((self.N,3))
-        print(sv)
         for i in range(self.N):
             sv[i,0] = np.sin(self.theta[i]) * np.cos(self.phi[i])
             sv[i,1] = np.sin(self.theta[i]) * np.sin(self.phi[i])
             sv[i,2] = np.cos(self.theta[i])
         return sv
 
-    
-# # Test star sensor class
-ss = StarSensor()
-print(ss.phi)
-print(ss.theta)
-# print(ss.N)
-# print(ss.vt)
-
-x = np.random.random_sample((15,2))
-ss2 = StarSensor(19,x)
-sv2 = ss2.get_unit_vectors()
-print(sv2)
-# print(np.linalg.norm(sv2,axis=1))
-
 ################################################################################################
 
 class SatExtendedKalmanFilter():
 
-    def __init__(self, satellite, model_jacob, meas_jacob, process_noise, meas_noise):
+    def __init__(self, satellite, star_sensor, process_noise, meas_noise):
         self.sat = satellite
-        self.At = model_jacob
-        self.Ct = meas_jacob
+        self.ss = star_sensor
+        self.update_model_jacob()
+        # self.init_jacobians()
         self.Qt = process_noise
         self.Rt = meas_noise
+
+    def update_model_jacob(self):
+        omega = self.sat.get_ang_vel()
+        Wt = np.array([
+            [0., -omega[0], -omega[1], -omega[2]],
+            [omega[0], 0., -omega[2], omega[1]],
+            [omega[1], omega[2], 0., -omega[0]],
+            [omega[2], -omega[1], omega[0], 0.]
+        ])
+        At = (np.identity(4) + Wt * dt)
+        self.At = At
+
+    def update_meas_jacob(self):
+        pass
+
+    def dgj_dq0(self, star_vector):
+        pass 
 
 ################################################################################################
 
@@ -193,9 +185,9 @@ sat_tau = np.array([np.ones(n), np.cos(t), -2*np.sin(t)])
 
 sat = Satellite(J, omega_0=[1., 2. ,3.])
 sat_sim = SatelliteSimulation(sat, T, dt, sat_tau)
-sat_sim.run_simulation(False)
+# sat_sim.run_simulation(False)
 
-# sat_quat_end = sat_sim.sat_quat[-1]
+ss = StarSensor()
 
-# Rq = Quaternion2Rotation(sat_quat_end)
-# print(Rq)
+sat_ekf = SatExtendedKalmanFilter(sat, ss, 1e-4, 1e-4)
+print(sat_ekf.At)

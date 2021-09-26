@@ -3,7 +3,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 # import scipy
-import tools.rotations
+from tools.rotations import Quaternion2Rotation 
 
 
 class Satellite():
@@ -110,6 +110,11 @@ class SatelliteSimulation():
             ax2.legend()
             plt.show()
 
+################################################################################################
+
+# class SatExtendedKalmanFilter():
+
+#     def __init__(self, )
 
 ################################################################################################
 
@@ -126,6 +131,9 @@ sat_tau = np.array([np.ones(n), np.cos(t), -2*np.sin(t)])
 
 sat = Satellite(J, omega_0=[1., 2. ,3.])
 sat_sim = SatelliteSimulation(sat, T, dt, sat_tau)
-sat_sim.run_simulation()
+sat_sim.run_simulation(False)
 
+# sat_quat_end = sat_sim.sat_quat[-1]
 
+# Rq = Quaternion2Rotation(sat_quat_end)
+# print(Rq)

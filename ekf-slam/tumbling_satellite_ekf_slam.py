@@ -3,6 +3,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 # import scipy
+# import random
 from tools.rotations import Quaternion2Rotation 
 
 
@@ -112,9 +113,38 @@ class SatelliteSimulation():
 
 ################################################################################################
 
-# class SatExtendedKalmanFilter():
+class StarSensor():
 
-#     def __init__(self, )
+    def __init__(self, number_of_stars=10, star_coords=None, meas_noise=1e-4):
+        
+        self.N = number_of_stars
+        if star_coords == None:
+            azimuth_angles = 2 * np.pi * np.random.random((self.N,1))
+            polar_angles = np.pi * np.random.random((self.N,1))
+        else:
+            azimuth_angles = star_coords[:,0]
+            polar_angles = star_coords[:,1]
+        self.phi = azimuth_angles
+        self.theta = polar_angles
+        self.vt = meas_noise
+
+# # Test star sensor class
+# ss = StarSensor()
+# print(ss.phi)
+# print(ss.theta)
+# print(ss.N)
+# print(ss.vt)
+
+################################################################################################
+
+class SatExtendedKalmanFilter():
+
+    def __init__(self, satellite, model_jacob, meas_jacob, process_noise, meas_noise):
+        self.sat = satellite
+        self.At = model_jacob
+        self.Ct = meas_jacob
+        self.Qt = process_noise
+        self.Rt = meas_noise
 
 ################################################################################################
 

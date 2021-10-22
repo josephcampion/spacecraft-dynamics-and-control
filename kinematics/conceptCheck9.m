@@ -18,7 +18,7 @@ omega_t = [sin(0.1*t) 0.01*ones(length(t),1) cos(0.1*t)] * 20 * pi / 180;
 
 xt = zeros(length(t), size(x0,1));
 
-xt(1,:) = x0';
+xt(1,:) = x0;
 
 for ii = 2:length(t)
     

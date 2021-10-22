@@ -165,7 +165,28 @@ class SatExtendedKalmanFilter():
         self.At = At
 
     def update_meas_jacob(self):
-        pass
+        
+        ns = self.ss.N
+        Ct = np.zeros((3 * ns, 3 * ns + 4))
+
+        sv = self.ss.get_unit_vectors()
+        quat = self.sat.get_attitude_quat()
+
+        for i in range(ns):
+            dg_dq = self.get_dg_dq(sv[i])
+            print(dg_dq)
+            Ct[3*i:(3*i+3), 0:4] = dg_dq
+            Ct[3*i:(3*i+3), (4+3*i):(4+3*i+3)] = Quaternion2Rotation(quat)
+
+        return Ct
+
+    def get_dg_dq(self, star_vector):
+        dg_dq0 = self.get_dg_dq0(star_vector)
+        dg_dq1 = self.get_dg_dq1(star_vector)
+        dg_dq2 = self.get_dg_dq2(star_vector)
+        dg_dq3 = self.get_dg_dq3(star_vector)
+        dg_dq = np.array([dg_dq0, dg_dq1, dg_dq2, dg_dq3]).transpose()
+        return dg_dq
 
     def get_dg_dq0(self, star_vector):
         sx = star_vector[0]
@@ -177,9 +198,9 @@ class SatExtendedKalmanFilter():
         q2 = q[2]
         q3 = q[3]
         dg_dq0 = np.array([
-            [ 2 * q3 * sy - 2 * q2 * sz ],
-            [-2 * q3 * sx + 2 * q1 * sz ],
-            [ 2 * q2 * sx - 2 * q1 * sy ]
+             2 * q3 * sy - 2 * q2 * sz ,
+            -2 * q3 * sx + 2 * q1 * sz ,
+             2 * q2 * sx - 2 * q1 * sy 
         ])
         return dg_dq0
 
@@ -193,9 +214,9 @@ class SatExtendedKalmanFilter():
         q2 = q[2]
         q3 = q[3]
         dg_dq1 = np.array([
-            [ 2 * q2 * sy - 2 * q3 * sz ],
-            [ 2 * q2 * sx - 4 * q1 * sy + 2 * q0 * sz ],
-            [ 2 * q3 * sx - 2 * q0 * sy - 4 * q1 * sz ]
+             2 * q2 * sy - 2 * q3 * sz ,
+             2 * q2 * sx - 4 * q1 * sy + 2 * q0 * sz ,
+             2 * q3 * sx - 2 * q0 * sy - 4 * q1 * sz 
         ])
         return dg_dq1
 
@@ -209,9 +230,9 @@ class SatExtendedKalmanFilter():
         q2 = q[2]
         q3 = q[3]
         dg_dq2 = np.array([
-            [-4 * q2 * sx + 2 * q1 * sy + 2 * q0 * sz ],
-            [ 2 * q1 * sx + 2 * q3 * sz ],
-            [ 2 * q0 * sx + 2 * q3 * sy - 4 * q2 * sz ]
+            -4 * q2 * sx + 2 * q1 * sy + 2 * q0 * sz ,
+             2 * q1 * sx + 2 * q3 * sz ,
+             2 * q0 * sx + 2 * q3 * sy - 4 * q2 * sz 
         ])
         return dg_dq2
 
@@ -225,9 +246,9 @@ class SatExtendedKalmanFilter():
         q2 = q[2]
         q3 = q[3]
         dg_dq3 = np.array([
-            [-4 * q3 * sx + 2 * q0 * sy + 2 * q1 * sz ],
-            [-2 * q0 * sx - 4 * q3 * sy + 2 * q2 * sz ],
-            [ 2 * q1 * sx + 2 * q2 * sy ]
+            -4 * q3 * sx + 2 * q0 * sy + 2 * q1 * sz ,
+            -2 * q0 * sx - 4 * q3 * sy + 2 * q2 * sz ,
+             2 * q1 * sx + 2 * q2 * sy 
         ])
         return dg_dq3
 
@@ -248,10 +269,12 @@ sat = Satellite(J, omega_0=[1., 2. , 3.])
 sat_sim = SatelliteSimulation(sat, T, dt, sat_tau)
 sat_sim.run_simulation(False)
 
-ss = StarSensor()
+ss = StarSensor(1)
 
 sat_ekf = SatExtendedKalmanFilter(sat, ss, 1e-4, 1e-4)
-# print(sat_ekf.At)
+# print(sat_ekf.ss.get_unit_vectors())
 
 sv = np.array([0., np.sqrt(3)/2, 0.5])
-print(sat_ekf.get_dg_dq3(sv))
+# print(sat_ekf.get_dg_dq(sv))
+print(sat_ekf.update_meas_jacob().shape)
+print(sat_ekf.update_meas_jacob())

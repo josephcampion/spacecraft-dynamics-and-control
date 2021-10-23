@@ -42,7 +42,7 @@ for i in range(2, N):
     xt[i] = xt[i-1] + np.transpose(eul_dot) * dt
 
 # plt.plot(t, np.transpose(omega_t))
-plt.plot(t,xt)
+plt.plot(t,omega_t)
 plt.show()
 
 

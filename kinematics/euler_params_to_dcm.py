@@ -20,13 +20,13 @@ beta = np.array([0.235702,0.471405,-0.471405,0.707107])
 
 dcm = eul_params_to_dcm(beta)
 
-print(dcm)
+# print(dcm)
 
 beta_inv = np.array([0.235702,-0.471405,0.471405,-0.707107])
 
 dcm_inv = eul_params_to_dcm(beta_inv)
 
-print(dcm_inv)
+# print(dcm_inv)
 
 #################################################################3
 

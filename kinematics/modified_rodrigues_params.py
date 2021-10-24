@@ -33,12 +33,12 @@ def mrp_to_dcm(mrp):
 mrp1 = np.array([0.1,0.2,0.3])
 
 dcm1 = mrp_to_dcm(mrp1)
-print(dcm1)
+# print(dcm1)
 
 mrp2 = np.array([-0.5,0.1,0.2])
 
 dcm2 = mrp_to_dcm(mrp2)
-print(dcm2)
+# print(dcm2)
 
 def add_mrp(sv1, sv2):
 
@@ -65,7 +65,7 @@ s_R_B = np.array([-0.1, 0.3, 0.1])
 # s_B_R = -s_R_B
 
 s_R_N = add_mrp(s_R_B, s_B_N)
-print(s_R_N)
+# print(s_R_N)
 
 # Problem 3
 
@@ -73,7 +73,7 @@ s_B_N = np.array([0.1, 0.2, 0.3])
 s_R_N = np.array([0.5, 0.3, 0.1])
 
 s_B_R = sub_mrp(s_B_N, s_R_N)
-print(s_B_R)
+# print(s_B_R)
 
 #####################################################################################################
 
@@ -142,12 +142,12 @@ for i in range(1, N):
 # Print answer to Concept Check 13
 
 sigma_42_norm = np.linalg.norm(sigma_t[N-1])
-print(sigma_42_norm)
+# print(sigma_42_norm)
 
 plt.plot(t, sigma_t)
 plt.xlabel("Time (sec)")
 plt.ylabel("Modified Rodrigues Parameters")
 plt.title("MRP Integration")
 plt.legend(["s1", "s2", "s3"])
-plt.show()
+# plt.show()
 

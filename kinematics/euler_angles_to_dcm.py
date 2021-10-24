@@ -89,7 +89,7 @@ phi2 =      -36.0524 /180*np.pi;
  
 DCM_313 = dir_cosine_mat(psi2, theta2, phi2, 3, 1, 3)
 
-print(DCM_313)
+# print(DCM_313)
 
 # Problem 2
 
@@ -99,9 +99,9 @@ DCM_RN = dir_cosine_mat(-5*np.pi/180, 5*np.pi/180, 5*np.pi/180, 3, 2, 1)
 
 DCM_BR = DCM_BN * np.transpose(DCM_RN)
 
-print(DCM_BN)
+# print(DCM_BN)
 
-print(DCM_RN)
+# print(DCM_RN)
 
-print(DCM_BR)
+# print(DCM_BR)
 
